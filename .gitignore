@@ -1,0 +1,3 @@
+# dont need the eclipse build foldery
+build/
+.dep/
