@@ -5,7 +5,8 @@
 
 # Compiler options here.
 ifeq ($(USE_OPT),)
-  USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16
+  USE_OPT = -O2 -ggdb -fomit-frame-pointer -falign-functions=16 -std=gnu99
+  USE_OPT += -fsingle-precision-constant -Wdouble-promotion
 endif
 
 # C specific options here (added to USE_OPT).
@@ -71,7 +72,12 @@ endif
 
 # Enables the use of FPU on Cortex-M4 (no, softfp, hard).
 ifeq ($(USE_FPU),)
-  USE_FPU = no
+  USE_FPU = hard
+endif
+
+# Enable this if you really want to use the STM FWLib.
+ifeq ($(USE_FWLIB),)
+  USE_FWLIB = yes
 endif
 
 #
@@ -83,7 +89,7 @@ endif
 #
 
 # Define project name here
-PROJECT = ch
+PROJECT = ECOCar_ESC_Firmware
 
 # Imported source files and paths
 CHIBIOS = ../../chibios3

@@ -9,6 +9,8 @@
 #include "ch.h"
 #include "hal.h"
 
+#include <string.h>
+
 // Settings
 #define UART_BAUD               115200
 #define UART_DEVICE             UARTD2
@@ -16,6 +18,22 @@
 #define UART_TX_PIN             2
 #define UART_RX_PORT            GPIOA
 #define UART_RX_PIN             3
+#define UART_RX_BUFFER_SIZE     1024
+
+#define PACKET_MAX_LEN          512
+
+// Threads
+static THD_FUNCTION( packet_process_thread, arg );
+static THD_WORKING_AREA( packet_process_thread_wa, 4096 );
+static thread_t *packet_process_tp;
+
+// Variables
+static uint8_t uart_rx_buffer[UART_RX_BUFFER_SIZE];
+static int uart_rx_read_pos = 0;
+static int uart_rx_write_pos = 0;
+
+// Private functions
+static void send_packet( unsigned char *data, unsigned int len );
 
 /*
  * This callback is invoked when a transmission buffer has been completely
@@ -47,8 +65,15 @@ static void rxerr(UARTDriver *uartp, uartflags_t e) {
  */
 static void rxchar(UARTDriver *uartp, uint16_t c) {
   (void)uartp;
-  (void)c;
-  // TODO: process the characters here
+
+  // Put the character in a buffer
+  uart_rx_buffer[uart_rx_write_pos++] = c;
+
+  // wrap back on overflow
+  if( uart_rx_write_pos == UART_RX_BUFFER_SIZE )uart_rx_write_pos = 0;
+
+  // notify the thread that there is data available
+  chEvtSignalI( packet_process_tp, (eventmask_t) 1 );
 }
 
 /*
@@ -82,7 +107,52 @@ static UARTConfig uart_config = {
    0
 };
 
+/*
+ * Thread function to process each received byte
+ */
+static THD_FUNCTION( packet_process_thread, arg ) {
+  (void) arg;
+
+  chRegSetThreadName( "comm_uart process" );
+  // returns pointer to current thread
+  packet_process_tp = chThdGetSelfX();
+
+  // main loop
+  while(1) {
+    // wait for data available signal (sent by rxchar callback)
+    chEvtWaitAny( (eventmask_t) 1 );
+
+    // process data as long as it is available
+    while( uart_rx_read_pos != uart_rx_write_pos ) {
+      // TODO: call function to process the data and increment read pos
+      // process( uart_rx_buffer[ uart_rx_read_pos++ ] );
+
+      // wrap back on overflow (circular buffer)
+      if( uart_rx_read_pos == UART_RX_BUFFER_SIZE ) uart_rx_read_pos = 0;
+    }
+  }
+}
+
+/*
+ * send data packet over UART
+ * @param data - pointer to data to send
+ * @param len - length of data to send
+ */
+static void send_packet( unsigned char *data, unsigned int len ) {
+  // wait for previous transmission to finish
+  while( UART_DEVICE.txstate == UART_TX_ACTIVE ) chThdSleep(1);
+
+  // copy data to another buffer
+  static uint8_t buffer[PACKET_MAX_LEN + 5];
+  memcpy( buffer, data, len );
+
+  // send the data over UART
+  uartStartSend( &UART_DEVICE, len, buffer );
+}
+
 void comm_uart_init(void) {
+  // TODO: Initialize packet and pass send_packet function
+
   // Initialize UART
   uartStart( &UART_DEVICE, &uart_config );
   // Setup the UART pins
@@ -92,5 +162,6 @@ void comm_uart_init(void) {
                    PAL_STM32_OSPEED_HIGHEST | PAL_STM32_PUDR_PULLUP );
 
   // Start UART processing thread
-  // TODO: chThdCreateStatic( );
+  chThdCreateStatic( packet_process_thread_wa, sizeof(packet_process_thread_wa),
+                     NORMALPRIO, packet_process_thread, NULL );
 }
