@@ -9,6 +9,7 @@
 #include "hal.h"
 #include "comm_uart.h"
 #include "packet.h"
+#include "datatypes.h"
 
 #include <string.h>
 
@@ -151,9 +152,9 @@ static void send_packet( unsigned char *data, unsigned int len ) {
   uartStartSend( &UART_DEVICE, len, buffer );
 }
 
-void comm_uart_init(void) {
+void comm_uart_init( void (*process_function)(unsigned char *data, unsigned int len) ) {
   // Initialize packet and pass send_packet function
-  packet_init( send_packet, NULL, UART_PACKET_HANDLER );
+  packet_init( send_packet, process_function, UART_PACKET_HANDLER );
 
   // Initialize UART
   uartStart( &UART_DEVICE, &uart_config );

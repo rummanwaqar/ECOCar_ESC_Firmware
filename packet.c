@@ -39,13 +39,13 @@ static THD_WORKING_AREA(timer_thread_wa, 512);
  * initializes the packet for a particular handler
  * @param send_function - pointer to TX function
  * @param process_function - pointer to processing function
- * @param handler_num - handler number
+ * @param handler_num - handler type
  */
 void packet_init( void (*send_function)(unsigned char *data, unsigned int len),
                   void (*process_function)(unsigned char *data, unsigned int len),
-                  int handler_num ) {
-  handler_states[handler_num].send_func = send_function;
-  handler_states[handler_num].process_func = process_function;
+                  packet_type handler_num ) {
+  handler_states[(int)handler_num].send_func = send_function;
+  handler_states[(int)handler_num].process_func = process_function;
 
   // Start timer thread
   chThdCreateStatic(timer_thread_wa, sizeof(timer_thread_wa),
@@ -56,9 +56,9 @@ void packet_init( void (*send_function)(unsigned char *data, unsigned int len),
  * packages the data to be send and calling the send function
  * @param data - pointer to data to be transmitted
  * @param len - length of data to be transmitted
- * @handler_num - handler number
+ * @handler_num - handler type
  */
-void packet_send_packet( unsigned char *data, unsigned int len, int handler_num) {
+void packet_send_packet( unsigned char *data, unsigned int len, packet_type handler_num) {
   // ensure length of data is less than max size
   if( len > PACKET_MAX_LEN ) return;
 
@@ -99,9 +99,9 @@ void packet_timerfunc( void ) {
 /*
  * process a packet byte
  * @param rx_data - data byte received
- * @param handler_num - handler number
+ * @param handler_num - handler type
  */
-void packet_process_byte( uint8_t rx_data, int handler_num ) {
+void packet_process_byte( uint8_t rx_data, packet_type handler_num ) {
   switch( handler_states[handler_num].rx_state ){
   // start byte (initialize)
   case 0:

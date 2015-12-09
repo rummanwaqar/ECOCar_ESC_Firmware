@@ -11,7 +11,8 @@
 /*
  * Initializes uart communication thread
  * Using UART2 on PA2 (TX) and PA3 (RX)
+ * @param process_function - pointer to command processing function
  */
-void comm_uart_init(void);
+void comm_uart_init( void (*process_function)(unsigned char *data, unsigned int len) );
 
 #endif /* COMM_UART_H_ */

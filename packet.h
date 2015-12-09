@@ -9,6 +9,7 @@
 #define PACKET_H_
 
 #include <stdint.h>
+#include "datatypes.h"
 
 /*
  * Data Packaging:
@@ -30,8 +31,8 @@
 // Functions
 void packet_init( void (*send_function)(unsigned char *data, unsigned int len),
                   void (*process_function)(unsigned char *data, unsigned int len),
-                  int handler_num );
-void packet_process_byte( uint8_t rx_data, int handler_num );
-void packet_send_packet( unsigned char *data, unsigned int len, int handler_num);
+                  packet_type handler_num );
+void packet_process_byte( uint8_t rx_data, packet_type handler_num );
+void packet_send_packet( unsigned char *data, unsigned int len, packet_type handler_num);
 
 #endif /* PACKET_H_ */
