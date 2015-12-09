@@ -3,7 +3,7 @@
 
 Todo:
 * ~~Create a new project.~~
-* Setup UART Serial communication
+* ~~Setup UART Serial communication~~
 * Read encoder data
 
 ###### Project was build in ChibiStudio using ChibiOS 3.0
