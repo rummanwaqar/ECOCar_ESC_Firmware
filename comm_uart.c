@@ -21,6 +21,8 @@
 #define UART_RX_PIN             3
 #define UART_RX_BUFFER_SIZE     1024
 
+#define UART_PACKET_HANDLER     0
+
 // Threads
 static THD_FUNCTION( packet_process_thread, arg );
 static THD_WORKING_AREA( packet_process_thread_wa, 4096 );
@@ -123,8 +125,8 @@ static THD_FUNCTION( packet_process_thread, arg ) {
 
     // process data as long as it is available
     while( uart_rx_read_pos != uart_rx_write_pos ) {
-      // TODO: call function to process the data and increment read pos
-      // process( uart_rx_buffer[ uart_rx_read_pos++ ] );
+      // call function to process the data
+      packet_process_byte( uart_rx_buffer[ uart_rx_read_pos++ ], UART_PACKET_HANDLER );
 
       // wrap back on overflow (circular buffer)
       if( uart_rx_read_pos == UART_RX_BUFFER_SIZE ) uart_rx_read_pos = 0;
@@ -150,7 +152,8 @@ static void send_packet( unsigned char *data, unsigned int len ) {
 }
 
 void comm_uart_init(void) {
-  // TODO: Initialize packet and pass send_packet function
+  // Initialize packet and pass send_packet function
+  packet_init( send_packet, NULL, UART_PACKET_HANDLER );
 
   // Initialize UART
   uartStart( &UART_DEVICE, &uart_config );

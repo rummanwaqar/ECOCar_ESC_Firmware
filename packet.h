@@ -31,8 +31,7 @@
 void packet_init( void (*send_function)(unsigned char *data, unsigned int len),
                   void (*process_function)(unsigned char *data, unsigned int len),
                   int handler_num );
-void packet_process( uint8_t rx_data, int handler_num );
-void packet_timerfunc( void );
+void packet_process_byte( uint8_t rx_data, int handler_num );
 void packet_send_packet( unsigned char *data, unsigned int len, int handler_num);
 
 #endif /* PACKET_H_ */

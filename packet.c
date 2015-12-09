@@ -5,6 +5,8 @@
  *      Author: Rumman
  */
 
+#include "ch.h"
+#include "hal.h"
 #include "packet.h"
 #include "crc.h"
 
@@ -29,6 +31,10 @@ typedef struct {
 // array to hold different packet handlers (uart, can)
 static PACKET_STATE_T handler_states[PACKET_HANDLERS];
 
+// Threads
+static THD_FUNCTION(timer_thread, arg);
+static THD_WORKING_AREA(timer_thread_wa, 512);
+
 /*
  * initializes the packet for a particular handler
  * @param send_function - pointer to TX function
@@ -40,6 +46,10 @@ void packet_init( void (*send_function)(unsigned char *data, unsigned int len),
                   int handler_num ) {
   handler_states[handler_num].send_func = send_function;
   handler_states[handler_num].process_func = process_function;
+
+  // Start timer thread
+  chThdCreateStatic(timer_thread_wa, sizeof(timer_thread_wa),
+                    NORMALPRIO, timer_thread, NULL);
 }
 
 /*
@@ -91,7 +101,7 @@ void packet_timerfunc( void ) {
  * @param rx_data - data byte received
  * @param handler_num - handler number
  */
-void packet_process( uint8_t rx_data, int handler_num ) {
+void packet_process_byte( uint8_t rx_data, int handler_num ) {
   switch( handler_states[handler_num].rx_state ){
   // start byte (initialize)
   case 0:
@@ -156,4 +166,18 @@ void packet_process( uint8_t rx_data, int handler_num ) {
     handler_states[handler_num].rx_state = 0;
     break;
   }
+}
+
+/**
+ * This thread is only for calling the timer function once
+ * per millisecond.
+ */
+static THD_FUNCTION(timer_thread, arg) {
+    (void)arg;
+    chRegSetThreadName("packet timer");
+
+    for(;;) {
+        packet_timerfunc();
+        chThdSleepMilliseconds(1);
+    }
 }
