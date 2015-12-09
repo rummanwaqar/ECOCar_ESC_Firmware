@@ -5,6 +5,9 @@
 
 #include "ch.h"
 #include "hal.h"
+#include "comm_uart.h"
+#include "datatypes.h"
+#include "commands.h"
 
 /*
  * Blinking LED (CPU Alive) Thread
@@ -31,6 +34,7 @@ int main() {
 
   // spawn blink thread
   (void)chThdCreateStatic(waBlink, sizeof(waBlink),LOWPRIO, blinkThread, NULL);
+  comm_uart_init( commands_process_packet );
 
   // spin the main loop
   while(1){

@@ -12,11 +12,25 @@
 #include <stdbool.h>
 #include "ch.h"
 
-// Packet handler datatype
-// Max packet handlers defined inside packet.h
+#define FW_VERSION_MAJOR        0
+#define FW_VERSION_MINOR        1
+
+/*
+ * Packet handler datatype
+ * Max packet handlers defined inside packet.h
+ */
 typedef enum {
   UART_PACKET_HANDLER = 0,  // UART
   CAN_PACKET_HANDLER = 1    // CAN Bus
 } packet_type;
+
+/*
+ * Communication commands
+ */
+typedef enum {
+  COMM_FW_VERSION = 0,
+  COMM_ALIVE,
+  COMM_REBOOT
+} comm_packet_id;
 
 #endif /* DATATYPES_H_ */
