@@ -120,7 +120,8 @@ CSRC = $(STARTUPSRC) \
        $(BOARDSRC) \
        $(TESTSRC) \
        main.c \
-       comm_uart.c
+       comm_uart.c \
+       packet.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.

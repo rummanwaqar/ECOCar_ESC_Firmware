@@ -5,9 +5,10 @@
  *      Author: Rumman
  */
 
-#include "comm_uart.h"
 #include "ch.h"
 #include "hal.h"
+#include "comm_uart.h"
+#include "packet.h"
 
 #include <string.h>
 
@@ -19,8 +20,6 @@
 #define UART_RX_PORT            GPIOA
 #define UART_RX_PIN             3
 #define UART_RX_BUFFER_SIZE     1024
-
-#define PACKET_MAX_LEN          512
 
 // Threads
 static THD_FUNCTION( packet_process_thread, arg );
