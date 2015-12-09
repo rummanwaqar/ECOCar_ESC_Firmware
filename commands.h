@@ -9,11 +9,6 @@
 #define COMMANDS_H_
 
 /*
- * Initialize command thread
- */
-void commands_init(void);
-
-/*
  * Process command packet
  */
 void commands_process_packet( unsigned char *data, unsigned int len );

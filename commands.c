@@ -11,20 +11,8 @@
 #include "datatypes.h"
 #include "packet.h"
 
-// Threads
-static THD_FUNCTION(detect_thread, arg);
-static THD_WORKING_AREA(detect_thread_wa, 2048);
-static thread_t *detect_tp;
-
 // Private variables
 static uint8_t send_buffer[PACKET_MAX_LEN];
-
-/*
- * Initialize command thread
- */
-void commands_init(void) {
-  chThdCreateStatic( detect_thread_wa, sizeof(detect_thread_wa), NORMALPRIO, detect_thread, NULL );
-}
 
 /*
  * Process command packet
@@ -57,21 +45,4 @@ void commands_process_packet( unsigned char *data, unsigned int len ) {
  */
 void commands_send_packet( unsigned char *data, unsigned int len ){
   packet_send_packet( data, len, UART_PACKET_HANDLER );
-}
-
-/*
- * Command Thread
- */
-static THD_FUNCTION(detect_thread, arg) {
-  (void)arg;
-
-  chRegSetThreadName("Detect");
-
-  // get pointer to self
-  detect_tp = chThdGetSelfX();
-
-  // main loop
-  while(1) {
-    // TODO: stuff here
-  }
 }
