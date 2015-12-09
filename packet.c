@@ -6,7 +6,7 @@
  */
 
 #include "packet.h"
-//#include "crc.h"
+#include "crc.h"
 
 #include <string.h>
 
@@ -62,7 +62,7 @@ void packet_send_packet( unsigned char *data, unsigned int len, int handler_num)
   memcpy( handler_states[handler_num].tx_buff + i, data, len );
   i += len;
   // add the crc bytes
-  unsigned short crc = 4; // TODO: replace with crc function
+  unsigned short crc = crc16( data, len );
   handler_states[handler_num].tx_buff[i++] = (uint8_t) (crc >> 8);
   handler_states[handler_num].tx_buff[i++] = (uint8_t) (crc & 0xFF);
   // stop byte
@@ -138,7 +138,10 @@ void packet_process( uint8_t rx_data, int handler_num ) {
   // stop byte (reset)
   case 5:
     if( rx_data == STOP_COND ){
-      if( 1 ) { // TODO: check crc here
+      // check crc
+      if( crc16( handler_states[handler_num].rx_buff, handler_states[handler_num].payload_len ) ==
+          ( (unsigned short) handler_states[handler_num].crc_high << 8
+          | (unsigned short) handler_states[handler_num].crc_low ) ) {
         // Packet received
         if( handler_states[handler_num].process_func ) {
           handler_states[handler_num].process_func( handler_states[handler_num].rx_buff,
