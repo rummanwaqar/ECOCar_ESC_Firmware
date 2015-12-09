@@ -47,14 +47,6 @@ void commands_process_packet( unsigned char *data, unsigned int len ) {
     commands_send_packet( send_buffer, index );
     break;
 
-  case COMM_ALIVE:
-    break;
-
-  case COMM_REBOOT:
-    // Lock the system and enter an infinite loop. The watchdog will reboot.
-    __disable_irq();
-    for(;;){};
-    break;
   }
 }
 

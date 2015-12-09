@@ -28,9 +28,7 @@ typedef enum {
  * Communication commands
  */
 typedef enum {
-  COMM_FW_VERSION = 0,
-  COMM_ALIVE,
-  COMM_REBOOT
+  COMM_FW_VERSION = 0
 } comm_packet_id;
 
 #endif /* DATATYPES_H_ */
