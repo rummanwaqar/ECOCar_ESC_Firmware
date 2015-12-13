@@ -10,6 +10,18 @@
 #include "commands.h"
 #include "comm_usb_serial.h"
 #include "encoder.h"
+#include "chprintf.h"
+
+/*
+ * printf function
+ */
+void main_printf(const char *fmt, ...) {
+    va_list ap;
+
+    va_start(ap, fmt);
+    chvprintf((BaseSequentialStream*)&SDU1, fmt, ap);
+    va_end(ap);
+}
 
 /*
  * Blinking LED (CPU Alive) Thread
