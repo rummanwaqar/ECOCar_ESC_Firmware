@@ -59,10 +59,8 @@ int main() {
   // spin the main loop
   while(1){
     encoder_type encoder_data = encoder_values();
-    palWritePad( GPIOD, GPIOD_LED3, encoder_data.A );
-    palWritePad( GPIOD, GPIOD_LED4, encoder_data.B );
-    palWritePad( GPIOD, GPIOD_LED5, encoder_data.C );
-    chThdSleepMilliseconds(100);
+    main_printf( "A:%d B:%d C:%d\r\n", encoder_data.A, encoder_data.B, encoder_data.C );
+    chThdSleepMilliseconds(50);
   }
   return 0;
 }

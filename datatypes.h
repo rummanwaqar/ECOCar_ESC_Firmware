@@ -19,9 +19,9 @@
  * Encoder data type
  */
 typedef struct {
-  int A : 1;
-  int B : 1;
-  int C : 1;
+  unsigned int A : 1;
+  unsigned int B : 1;
+  unsigned int C : 1;
 } encoder_type;
 
 /*
