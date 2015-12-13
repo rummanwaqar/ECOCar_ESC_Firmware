@@ -15,34 +15,30 @@
 #define ENCODER_C_PIN   4
 
 /*
+ * Encode state variable
+ */
+static encoder_type encoder_data;
+
+/*
  * callback for encoders
  */
 static void extcb(EXTDriver *extp, expchannel_t channel) {
   (void)extp;
 
+  // update the encoder data structure
   switch(channel) {
   case ENCODER_A_PIN:
-    if( palReadPad( ENCODER_GPIO, ENCODER_A_PIN ) )
-      palSetPad( GPIOD, GPIOD_LED3 );
-    else
-      palClearPad( GPIOD, GPIOD_LED3 );
+    encoder_data.A = palReadPad( ENCODER_GPIO, ENCODER_A_PIN );
     break;
 
   case ENCODER_B_PIN:
-    if( palReadPad( ENCODER_GPIO, ENCODER_B_PIN ) )
-      palSetPad( GPIOD, GPIOD_LED4 );
-    else
-      palClearPad( GPIOD, GPIOD_LED4 );
+    encoder_data.B = palReadPad( ENCODER_GPIO, ENCODER_B_PIN );
     break;
 
   case ENCODER_C_PIN:
-    if( palReadPad( ENCODER_GPIO, ENCODER_C_PIN ) )
-      palSetPad( GPIOD, GPIOD_LED5 );
-    else
-      palClearPad( GPIOD, GPIOD_LED5 );
+    encoder_data.C = palReadPad( ENCODER_GPIO, ENCODER_C_PIN );
     break;
   }
-
 }
 
 
@@ -78,9 +74,13 @@ static const EXTConfig ext_config = {
   }
 };
 
-
 void encoder_init(void) {
+  // Initialize encoder data
+  encoder_data = (encoder_type) {0, 0, 0};
   // Activate the EXT peripheral
   extStart( &EXTD1, &ext_config );
+}
 
+encoder_type encoder_values(void) {
+  return encoder_data;
 }
