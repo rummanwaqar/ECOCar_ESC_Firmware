@@ -124,7 +124,8 @@ CSRC = $(STARTUPSRC) \
        packet.c \
        crc.c \
        commands.c \
-       comm_usb_serial.c
+       comm_usb_serial.c \
+       encoder.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.

@@ -9,6 +9,7 @@
 #include "datatypes.h"
 #include "commands.h"
 #include "comm_usb_serial.h"
+#include "encoder.h"
 
 /*
  * Blinking LED (CPU Alive) Thread
@@ -35,6 +36,9 @@ int main() {
 
   // initialize serial USB
   comm_usb_serial_init();
+
+  // enable encoder
+  encoder_init();
 
   // spawn blink thread
   (void)chThdCreateStatic(waBlink, sizeof(waBlink),LOWPRIO, blinkThread, NULL);

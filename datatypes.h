@@ -16,6 +16,15 @@
 #define FW_VERSION_MINOR        1
 
 /*
+ * Encoder data type
+ */
+typedef struct {
+  int A : 1;
+  int B : 1;
+  int C : 1;
+} encoder_type;
+
+/*
  * Packet handler datatype
  * Max packet handlers defined inside packet.h
  */
