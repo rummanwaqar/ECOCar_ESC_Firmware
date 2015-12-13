@@ -15,40 +15,36 @@
 #define ENCODER_C_PIN   4
 
 /*
- * callback for Encoder A
+ * callback for encoders
  */
-static void extcbA(EXTDriver *extp, expchannel_t channel) {
+static void extcb(EXTDriver *extp, expchannel_t channel) {
   (void)extp;
-  (void)channel;
-  if( palReadPad( ENCODER_GPIO, ENCODER_A_PIN ) )
-    palSetPad( GPIOD, GPIOD_LED3 );
-  else
-    palClearPad( GPIOD, GPIOD_LED3 );
+
+  switch(channel) {
+  case ENCODER_A_PIN:
+    if( palReadPad( ENCODER_GPIO, ENCODER_A_PIN ) )
+      palSetPad( GPIOD, GPIOD_LED3 );
+    else
+      palClearPad( GPIOD, GPIOD_LED3 );
+    break;
+
+  case ENCODER_B_PIN:
+    if( palReadPad( ENCODER_GPIO, ENCODER_B_PIN ) )
+      palSetPad( GPIOD, GPIOD_LED4 );
+    else
+      palClearPad( GPIOD, GPIOD_LED4 );
+    break;
+
+  case ENCODER_C_PIN:
+    if( palReadPad( ENCODER_GPIO, ENCODER_C_PIN ) )
+      palSetPad( GPIOD, GPIOD_LED5 );
+    else
+      palClearPad( GPIOD, GPIOD_LED5 );
+    break;
+  }
+
 }
 
-/*
- * callback for Encoder B
- */
-static void extcbB(EXTDriver *extp, expchannel_t channel) {
-  (void)extp;
-  (void)channel;
-  if( palReadPad( ENCODER_GPIO, ENCODER_B_PIN ) )
-    palSetPad( GPIOD, GPIOD_LED4 );
-  else
-    palClearPad( GPIOD, GPIOD_LED4 );
-}
-
-/*
- * callback for Encoder C
- */
-static void extcbC(EXTDriver *extp, expchannel_t channel) {
-  (void)extp;
-  (void)channel;
-  if( palReadPad( ENCODER_GPIO, ENCODER_C_PIN ) )
-    palSetPad( GPIOD, GPIOD_LED5 );
-  else
-    palClearPad( GPIOD, GPIOD_LED5 );
-}
 
 /*
  * EXT config
@@ -56,11 +52,11 @@ static void extcbC(EXTDriver *extp, expchannel_t channel) {
  */
 static const EXTConfig ext_config = {
   {
-    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOE, extcbA},
+    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOE, extcb},
     {EXT_CH_MODE_DISABLED, NULL},
-    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOE, extcbB},
+    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOE, extcb},
     {EXT_CH_MODE_DISABLED, NULL},
-    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOE, extcbC},
+    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOE, extcb},
     {EXT_CH_MODE_DISABLED, NULL},
     {EXT_CH_MODE_DISABLED, NULL},
     {EXT_CH_MODE_DISABLED, NULL},
